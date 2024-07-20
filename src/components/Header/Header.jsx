@@ -1,10 +1,12 @@
 import styles from './Header.module.css'
 
-export function Header() {
+import logo from '../../assets/logo.svg'
 
+export function Header() {
     return (
         <header className={styles.header}>
-        <strong>Feed</strong>
+        <img src={logo} alt='Logo' />
+        <h2>Blog Feed</h2>
         </header>
     );
 }
