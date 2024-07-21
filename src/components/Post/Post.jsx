@@ -1,35 +1,43 @@
 import { Avatar } from '../Avatar/Avatar';
 import { Comment } from '../Comment/Comment';
-import styles from './Post.module.css'
 
-export function Post() {
+import styles from './Post.module.css';
+
+import { format, formatDistanceToNow } from 'date-fns';
+
+export function Post({ author, post, users }) {
+    const comments = post.comments || [];
+    const publishedAt = new Date(post.publishedAt);
+    const publishedDateTitle = format(publishedAt, "d LLLL yyyy 'at' HH:mm")
+    const publishedDateRelativeToNow = formatDistanceToNow(publishedAt, {
+        addSuffix: true
+    })
+
     return (
         <article className={styles.post}>
             <header className={styles.header}>
                 <div className={styles.author}>
                     <Avatar
-                        src="https://github.com/natalialepinski.png"
+                        src={author.avatar_url}
                     />
                     <div className={styles.authorInfo}>
-                        <strong>Natalia Lepinski</strong>
-                        <span>Software Developer</span>
+                        <strong>{author.name}</strong>
+                        <span>{author.role}</span>
                     </div>
                 </div>
                 <time 
                     className={styles.publishTime}
-                    title="18 July at 03:13 PM" 
-                    dateTime="2024-07-18 03:13:00">Published 1 hour ago
+                    title={publishedDateTitle} 
+                    dateTime={post.publishedAt}
+                >
+                    {publishedDateRelativeToNow}
                 </time>
             </header>
             
-            <div className={styles.content}>
-                <p>
-                    Hi All!
-                </p>
-                <p>
-                    This is my first post!
-                </p>
-            </div>
+            <div 
+                className={styles.content}
+                dangerouslySetInnerHTML={{ __html: post.content }}
+            />
 
             <form className={styles.commentForm}>
                 <strong>Write a comment</strong>
@@ -42,7 +50,22 @@ export function Post() {
             </form>
 
             <div className={styles.comentList}>
-                <Comment />
+                {comments.map(comment => {
+                    const user = users.find(user => user.id === comment.user_id);
+
+                    if (!user) {
+                        return null;
+                    }
+                    
+                    return (
+                        <Comment 
+                            key={comment.id}
+                            user={user}
+                            comment={comment}
+                        />
+                    );
+                })}
+
             </div>
         </article>
     );

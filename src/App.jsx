@@ -1,21 +1,39 @@
-import { Header } from "./components/Header/Header"
-import { Post } from "./components/Post/Post"
-import { Sidebar } from "./components/Sidebar/Sidebar"
+import { Header } from "./components/Header/Header";
+import { Post } from "./components/Post/Post";
+import { Sidebar } from "./components/Sidebar/Sidebar";
 
-import './global.css'
-import styles from './App.module.css'
+import './global.css';
+import styles from './App.module.css';
+
+import { posts } from "@/posts.json";
+import { users } from "@/users.json";
 
 export function App() {
+  const activeUser = users.find(user => user.active = true);
+
   return (
     <div>
       <Header />
       <div className={styles.wrapper}>
-        <Sidebar />
+        <Sidebar activeUser={activeUser} />
         <main>
-          <Post 
-            author="Test"
-            content="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Libero eveniet repellendus delectus ad quo illo commodi, modi perferendis, inventore beatae pariatur ut veritatis? Porro ab illo obcaecati, quia corporis fugit."
-          />
+          {posts.map(post => {
+            const user = users.find(user => user.id === post.author.user_id);
+            
+            if (!user) {
+              return null;
+            }
+
+            return (
+              <Post 
+                key={post.id}
+                author={user}
+                post={post}
+                users={users}
+              />
+            );
+          })}
+          
         </main>
       </div>
     </div>

@@ -1,8 +1,14 @@
 import { Avatar } from '../Avatar/Avatar';
-import styles from './Sidebar.module.css'
-import { PencilLine } from 'phosphor-react'
 
-export function Sidebar() {
+import styles from './Sidebar.module.css';
+
+import { PencilLine } from 'phosphor-react';
+
+export function Sidebar({ activeUser }) {
+    if (!activeUser) {
+        return null;
+    }
+
     return (
         <aside className={styles.sidebar}>
             <img 
@@ -11,10 +17,11 @@ export function Sidebar() {
             />
             <div className={styles.profile}>
                 <Avatar
-                    src="https://github.com/natalialepinski.png"
+                    src={activeUser.avatar_url}
+                    alt={activeUser.name}
                 />
-                <strong>Natalia Lepinski</strong>
-                <span>Software Developer</span>
+                <strong>{activeUser.name}</strong>
+                <span>{activeUser.role}</span>
             </div>
 
             <footer>
