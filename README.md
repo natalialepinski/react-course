@@ -3,3 +3,5 @@
 
 npm install
 npm run dev
+
+# July/2024 - Project under development

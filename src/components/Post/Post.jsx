@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Avatar } from '../Avatar/Avatar';
 import { Comment } from '../Comment/Comment';
 
@@ -5,13 +6,44 @@ import styles from './Post.module.css';
 
 import { format, formatDistanceToNow } from 'date-fns';
 
-export function Post({ author, post, users }) {
-    const comments = post.comments || [];
+export function Post({ author, post, users, activeUser }) {
+    const [comments, setComments] = useState(post.comments);
+    const [newCommentText, setNewCommentText] = useState('');
+
     const publishedAt = new Date(post.publishedAt);
     const publishedDateTitle = format(publishedAt, "d LLLL yyyy 'at' HH:mm")
     const publishedDateRelativeToNow = formatDistanceToNow(publishedAt, {
         addSuffix: true
     })
+
+    function handleCreateNewComment() {
+        event.preventDefault();
+        const newComment = {
+            id: comments.length + 1,
+            post_id: post.id,
+            user_id: activeUser.id,
+            content: newCommentText,
+            likes: 0
+        }
+        setComments([...comments, newComment]);
+        setNewCommentText('');
+    }
+
+    function handleNewCommentChange() {
+        event.target.setCustomValidity('');
+        setNewCommentText(event.target.value);
+    }
+
+    function handleNewCommentInvalid() {
+        event.target.setCustomValidity('Required field');
+    }
+
+    function deleteComment(commentId) {
+        const updatedComments = comments.filter(comment => comment.id !== commentId);
+        setComments(updatedComments);
+    }
+
+    const isNewCommentEmpty = newCommentText.length === 0;
 
     return (
         <article className={styles.post}>
@@ -39,13 +71,26 @@ export function Post({ author, post, users }) {
                 dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
-            <form className={styles.commentForm}>
+            <form 
+                className={styles.commentForm}
+                onSubmit={handleCreateNewComment}
+            >
                 <strong>Write a comment</strong>
-                <textarea 
+                <textarea
+                    name='comment'
                     placeholder='Write a comment here'
+                    value={newCommentText}
+                    onChange={handleNewCommentChange}
+                    onInvalid={handleNewCommentInvalid}
+                    required
                 />
                 <footer>
-                    <button type='submit'>Publish</button>
+                    <button 
+                        type='submit'
+                        disabled={isNewCommentEmpty}
+                    >
+                        Publish
+                    </button>
                 </footer>
             </form>
 
@@ -62,6 +107,7 @@ export function Post({ author, post, users }) {
                             key={comment.id}
                             user={user}
                             comment={comment}
+                            onDeleteComment={deleteComment}
                         />
                     );
                 })}

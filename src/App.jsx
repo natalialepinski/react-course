@@ -30,6 +30,7 @@ export function App() {
                 author={user}
                 post={post}
                 users={users}
+                activeUser={activeUser}
               />
             );
           })}
